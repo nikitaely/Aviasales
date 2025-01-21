@@ -7,13 +7,9 @@ export default function ListTickets({ tickets }) {
   return (
     <ul className="list-tickets">
       {tickets.map((ticket) => {
-        if (!id) {
-          var id = 0;
-        }
-        id += 1;
         return (
           <Ticket
-            key={id}
+            key={ticket.carrier + ' ' + ticket.price}
             price={ticket.price}
             carrier={ticket.carrier}
             segments={ticket.segments}

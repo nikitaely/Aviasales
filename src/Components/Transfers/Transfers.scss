@@ -36,12 +36,12 @@
 
 
 .checkbox-label {
-  padding: 8px 50px;
+  padding: 10px 50px;
   display: flex;
   align-items: center;
   font-size: 13px;
   line-height: 20px;
-  
+  padding-left: 10px;
 }
 
 .checkbox-label input {
@@ -56,7 +56,18 @@
   background-image: url(../../../public/сheckbox-active.svg);
 }
 
-.checkbox-labell:hover {
+.checkbox-label:hover {
     background-color: #F1FCFF;
 }
 
+
+.checkbox-label input:focus + .checkbox {
+  outline: 2px solid #1e90ff; 
+  outline-offset: 2px;        
+}
+
+
+.transfers-list {
+  list-style-type: none;
+  margin: 0px;
+}

@@ -15,7 +15,6 @@ export default function App() {
 
   const sortPrice = useSelector((state) => state.tickets.sortPrice);
   const transfers = useSelector((state) => state.tickets.transfers);
-  const dispatch = useDispatch();
 
   const sortTickets = (tickets, criteria) => {
     switch (criteria) {
@@ -45,22 +44,38 @@ export default function App() {
     setIsLoading(true);
     setError(null);
 
-    api
-      .getTickets()
-      .then((tickets) => {
-        if (isMounted) {
-          setTickets(tickets);
-          setIsLoading(false);
+    const loadTickets = async () => {
+      let totalTickets = [];
+      try {
+        const initialTickets = await api.getTickets();
+        if (!isMounted) return;
+
+        totalTickets = initialTickets;
+        setTickets(initialTickets);
+        setIsLoading(false);
+
+        // Загружаем оставшиеся билеты
+        while (totalTickets.length < 10000) {
+          try {
+            const newTickets = await api.getTickets();
+            if (!isMounted) return;
+            totalTickets = [...totalTickets, ...newTickets];
+            setTickets([...totalTickets]); // Обновляем состояние
+          } catch (err) {
+            console.error("Ошибка при загрузке дополнительных билетов:", err);
+          }
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         if (isMounted) {
           setError(
             "Ошибка при получении информации о билетах: " + error.message
           );
           setIsLoading(false);
         }
-      });
+      }
+    };
+
+    loadTickets();
 
     return () => {
       isMounted = false;
@@ -77,11 +92,12 @@ export default function App() {
     [sortedTickets, transfers]
   );
 
-  console.log(visibleTickets.slice(0, 5));
-  
-
   if (isLoading) {
-    return <div className="app"><Spin size="large" tip='Loading'/></div>
+    return (
+      <div className="app">
+        <Spin size="large" tip="Loading" />
+      </div>
+    );
   }
 
   if (error) {
